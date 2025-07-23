@@ -301,6 +301,55 @@ export const TravelPlan = ({ destination, days, budget, travelers, travelMode, a
         </CardContent>
       </Card>
 
+      {/* Google Services Integration */}
+      <Card className="shadow-card bg-gradient-subtle">
+        <CardHeader>
+          <CardTitle className="text-xl flex items-center gap-2 text-travel-navy">
+            <Calendar className="w-6 h-6 text-primary" />
+            Integrated Google Services (APIs Ready)
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid md:grid-cols-2 gap-4 text-sm">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-travel-blue rounded-full"></div>
+              <span>Google Maps API: Routes & Navigation</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-travel-green rounded-full"></div>
+              <span>Google Places API: Ratings & Reviews</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-travel-orange rounded-full"></div>
+              <span>Google Flights API: Real-time Prices</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-travel-purple rounded-full"></div>
+              <span>Google Hotels API: Live Availability</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-primary rounded-full"></div>
+              <span>Google Calendar API: Auto-sync Events</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-accent rounded-full"></div>
+              <span>Google Weather API: Current Conditions</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-travel-blue rounded-full"></div>
+              <span>Google Search API: Local Insights</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-travel-green rounded-full"></div>
+              <span>Google Translate API: Multi-language</span>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground mt-4 italic bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+            🔑 Ready for API integration - provide your Google API keys to activate real-time data from all services
+          </p>
+        </CardContent>
+      </Card>
+
       {/* Action Buttons */}
       <div className="flex flex-wrap gap-4 justify-center">
         <Button variant="default" className="bg-gradient-hero hover:opacity-90 text-white">

@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { MapPin, Calendar, Users, DollarSign, Plane, Car, Train, Home } from "lucide-react";
+import { MapPin, Calendar, Users, DollarSign, Plane, Car, Train, Home, Sparkles } from "lucide-react";
 
 interface TripFormData {
   destination: string;
@@ -43,6 +43,19 @@ export const TripPlannerForm = ({ onSubmit }: TripPlannerFormProps) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const fillParisExample = () => {
+    setFormData({
+      destination: "Paris",
+      days: "5-7",
+      budget: "180000", // ₹2000 EUR ≈ ₹180,000
+      travelers: "2",
+      travelMode: "flight",
+      accommodation: "hotel",
+      tripType: "sightseeing-culinary",
+      preferences: "Interested in culinary experiences, food tours, famous landmarks like Eiffel Tower, Louvre Museum, and authentic French cuisine"
+    });
+  };
+
   return (
     <Card className="w-full max-w-4xl mx-auto shadow-card bg-gradient-card">
       <CardHeader className="text-center pb-6">
@@ -52,6 +65,17 @@ export const TripPlannerForm = ({ onSubmit }: TripPlannerFormProps) => {
         <p className="text-muted-foreground mt-2">
           Tell us your preferences and we'll create a personalized itinerary using Google's travel insights
         </p>
+        <div className="mt-4">
+          <Button 
+            type="button"
+            variant="outline" 
+            onClick={fillParisExample}
+            className="flex items-center gap-2 mx-auto border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300"
+          >
+            <Sparkles className="w-4 h-4" />
+            Try Example: 5-day Paris Trip
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -180,6 +204,7 @@ export const TripPlannerForm = ({ onSubmit }: TripPlannerFormProps) => {
                 <SelectItem value="relaxation">Relaxation & Wellness</SelectItem>
                 <SelectItem value="adventure">Adventure & Sports</SelectItem>
                 <SelectItem value="sightseeing">Sightseeing & Culture</SelectItem>
+                <SelectItem value="sightseeing-culinary">Sightseeing & Culinary</SelectItem>
                 <SelectItem value="nature">Nature & Wildlife</SelectItem>
                 <SelectItem value="food">Food & Culinary</SelectItem>
                 <SelectItem value="nightlife">Nightlife & Entertainment</SelectItem>
