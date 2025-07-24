@@ -49,6 +49,7 @@ interface DayPlan {
 }
 
 interface TravelPlanProps {
+  startingPoint: string;
   destination: string;
   days: string;
   budget: number;
@@ -58,7 +59,7 @@ interface TravelPlanProps {
   tripType: string;
 }
 
-export const TravelPlan = ({ destination, days, budget, travelers, travelMode, accommodation, tripType }: TravelPlanProps) => {
+export const TravelPlan = ({ startingPoint, destination, days, budget, travelers, travelMode, accommodation, tripType }: TravelPlanProps) => {
   const [attractions, setAttractions] = useState<PlaceDetails[]>([]);
   const [restaurants, setRestaurants] = useState<PlaceDetails[]>([]);
   const [weather, setWeather] = useState<WeatherData | null>(null);
@@ -97,33 +98,53 @@ export const TravelPlan = ({ destination, days, budget, travelers, travelMode, a
 
   // Generate dynamic itinerary based on real data
   const generateDynamicPlan = (): DayPlan[] => {
-    const numDays = parseInt(days);
+    const numDays = parseInt(days.split('-')[0]); // Get first number from range like "5-7"
     const plan: DayPlan[] = [];
     
-    for (let day = 1; day <= Math.min(numDays, 5); day++) {
-      const dayAttractions = attractions.slice((day - 1) * 2, day * 2);
-      const dayRestaurants = restaurants.slice((day - 1) * 1, day * 1);
+    // Shuffle attractions to get different results each time
+    const shuffledAttractions = [...attractions].sort(() => Math.random() - 0.5);
+    const shuffledRestaurants = [...restaurants].sort(() => Math.random() - 0.5);
+    
+    for (let day = 1; day <= Math.min(numDays, 7); day++) {
+      const dayAttractions = shuffledAttractions.slice((day - 1) * 2, day * 2);
+      const dayRestaurants = shuffledRestaurants.slice((day - 1) * 1, day * 1);
+      
+      const themes = [
+        "Arrival & Local Exploration",
+        "Major Attractions & Landmarks", 
+        "Cultural Experience & Heritage",
+        "Adventure & Nature Activities",
+        "Shopping & Local Markets",
+        "Relaxation & Scenic Views",
+        "Final Exploration & Departure"
+      ];
       
       plan.push({
         day,
-        theme: day === 1 ? "Arrival & Local Exploration" : 
-               day === 2 ? "Main Attractions" :
-               day === 3 ? "Cultural Experience" :
-               day === 4 ? "Adventure & Nature" : "Shopping & Departure",
-        activities: dayAttractions.map((attraction, index) => ({
-          time: index === 0 ? "10:00 AM" : "2:00 PM",
-          activity: `Visit ${attraction.name}`,
+        theme: themes[day - 1] || "Exploration Day",
+        activities: dayAttractions.length > 0 ? dayAttractions.map((attraction, index) => ({
+          time: index === 0 ? "10:00 AM" : "2:30 PM",
+          activity: `Explore ${attraction.name}`,
           location: attraction.formatted_address,
-          duration: "2-3 hours",
-          cost: attraction.price_level ? attraction.price_level * 200 : 0,
-          description: `${attraction.types.includes('tourist_attraction') ? 'Tourist attraction' : 'Popular place'} with ${attraction.rating ? `${attraction.rating} star rating` : 'great reviews'}`
-        })),
+          duration: index === 0 ? "3-4 hours" : "2-3 hours",
+          cost: attraction.price_level ? attraction.price_level * 250 + Math.floor(Math.random() * 200) : Math.floor(Math.random() * 500) + 100,
+          description: `${attraction.types.includes('tourist_attraction') ? 'Famous tourist destination' : 'Popular local spot'} ${attraction.rating ? `rated ${attraction.rating}/5` : 'highly recommended by locals'}`
+        })) : [
+          {
+            time: "10:00 AM",
+            activity: `Local sightseeing in ${destination}`,
+            location: `Central ${destination}`,
+            duration: "3-4 hours",
+            cost: Math.floor(Math.random() * 500) + 200,
+            description: "Explore the local culture and attractions"
+          }
+        ],
         meals: {
           breakfast: day > 1 ? "Hotel breakfast (included)" : undefined,
-          lunch: dayRestaurants[0] ? `${dayRestaurants[0].name} (${dayRestaurants[0].rating ? `${dayRestaurants[0].rating}⭐` : 'Popular choice'})` : "Local restaurant",
-          dinner: "Traditional local cuisine"
+          lunch: dayRestaurants[0] ? `${dayRestaurants[0].name}${dayRestaurants[0].rating ? ` (${dayRestaurants[0].rating}⭐)` : ' (Local favorite)'}` : `Local restaurant in ${destination}`,
+          dinner: shuffledRestaurants[day % shuffledRestaurants.length]?.name || "Traditional local cuisine"
         },
-        accommodation: `${accommodation} in ${destination}`
+        accommodation: `${accommodation === 'hotel' ? 'Hotel' : accommodation === 'airbnb' ? 'Airbnb' : accommodation === 'resort' ? 'Resort' : 'Accommodation'} in ${destination}`
       });
     }
     

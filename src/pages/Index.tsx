@@ -6,6 +6,7 @@ import { MapPin, Sparkles, Globe, Clock } from "lucide-react";
 import heroImage from "@/assets/travel-hero.jpg";
 
 interface TripFormData {
+  startingPoint: string;
   destination: string;
   days: string;
   budget: string;
@@ -68,6 +69,7 @@ const Index = () => {
       <div className="min-h-screen bg-background py-8 px-4">
         <div className="container mx-auto">
           <TravelPlan
+            startingPoint={tripPlan.startingPoint}
             destination={tripPlan.destination}
             days={tripPlan.days}
             budget={parseInt(tripPlan.budget)}

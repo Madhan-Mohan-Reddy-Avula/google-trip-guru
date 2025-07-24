@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { MapPin, Calendar, Users, DollarSign, Plane, Car, Train, Home, Sparkles } from "lucide-react";
 
 interface TripFormData {
+  startingPoint: string;
   destination: string;
   days: string;
   budget: string;
@@ -24,6 +25,7 @@ interface TripPlannerFormProps {
 
 export const TripPlannerForm = ({ onSubmit }: TripPlannerFormProps) => {
   const [formData, setFormData] = useState<TripFormData>({
+    startingPoint: "",
     destination: "",
     days: "",
     budget: "",
@@ -45,6 +47,7 @@ export const TripPlannerForm = ({ onSubmit }: TripPlannerFormProps) => {
 
   const fillParisExample = () => {
     setFormData({
+      startingPoint: "Mumbai",
       destination: "Paris",
       days: "5-7",
       budget: "180000", // ₹2000 EUR ≈ ₹180,000
@@ -80,6 +83,22 @@ export const TripPlannerForm = ({ onSubmit }: TripPlannerFormProps) => {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid md:grid-cols-2 gap-6">
+            {/* Starting Point */}
+            <div className="space-y-2">
+              <Label htmlFor="startingPoint" className="flex items-center gap-2 text-travel-navy font-medium">
+                <MapPin className="w-4 h-4" />
+                Starting Point
+              </Label>
+              <Input
+                id="startingPoint"
+                placeholder="e.g., Mumbai, Delhi, Bangalore"
+                value={formData.startingPoint}
+                onChange={(e) => handleInputChange("startingPoint", e.target.value)}
+                required
+                className="border-2 focus:border-primary"
+              />
+            </div>
+
             {/* Destination */}
             <div className="space-y-2">
               <Label htmlFor="destination" className="flex items-center gap-2 text-travel-navy font-medium">
