@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { MapPin, Calendar, Users, DollarSign, Plane, Car, Train, Home, Sparkles } from "lucide-react";
+import { MapPin, Calendar, Users, DollarSign, Plane, Car, Train, Home, Sparkles, RefreshCw } from "lucide-react";
 
 interface TripFormData {
   startingPoint: string;
@@ -21,9 +21,10 @@ interface TripFormData {
 
 interface TripPlannerFormProps {
   onSubmit: (data: TripFormData) => void;
+  initialData?: TripFormData | null;
 }
 
-export const TripPlannerForm = ({ onSubmit }: TripPlannerFormProps) => {
+export const TripPlannerForm = ({ onSubmit, initialData }: TripPlannerFormProps) => {
   const [formData, setFormData] = useState<TripFormData>({
     startingPoint: "",
     destination: "",
@@ -35,6 +36,13 @@ export const TripPlannerForm = ({ onSubmit }: TripPlannerFormProps) => {
     tripType: "",
     preferences: "",
   });
+
+  // Update form data when initialData changes
+  useEffect(() => {
+    if (initialData) {
+      setFormData(initialData);
+    }
+  }, [initialData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,7 +58,7 @@ export const TripPlannerForm = ({ onSubmit }: TripPlannerFormProps) => {
       startingPoint: "Mumbai",
       destination: "Paris",
       days: "5-7",
-      budget: "180000", // ₹2000 EUR ≈ ₹180,000
+      budget: "180000",
       travelers: "2",
       travelMode: "flight",
       accommodation: "hotel",
@@ -59,25 +67,105 @@ export const TripPlannerForm = ({ onSubmit }: TripPlannerFormProps) => {
     });
   };
 
+  const fillManaliExample = () => {
+    setFormData({
+      startingPoint: "Delhi",
+      destination: "Manali",
+      days: "5-7",
+      budget: "25000",
+      travelers: "2",
+      travelMode: "bus",
+      accommodation: "hotel",
+      tripType: "adventure",
+      preferences: "Love adventure activities like paragliding, trekking, and mountain biking. Want to experience local culture and try Himachali cuisine."
+    });
+  };
+
+  const fillGoaExample = () => {
+    setFormData({
+      startingPoint: "Bangalore",
+      destination: "Goa",
+      days: "3-4",
+      budget: "40000",
+      travelers: "3-4",
+      travelMode: "flight",
+      accommodation: "resort",
+      tripType: "relaxation",
+      preferences: "Beach vacation with water sports, sunset views, and seafood. Looking for a mix of relaxation and some nightlife."
+    });
+  };
+
+  const clearForm = () => {
+    setFormData({
+      startingPoint: "",
+      destination: "",
+      days: "",
+      budget: "",
+      travelers: "",
+      travelMode: "",
+      accommodation: "",
+      tripType: "",
+      preferences: "",
+    });
+  };
+
   return (
     <Card className="w-full max-w-4xl mx-auto shadow-card bg-gradient-card">
       <CardHeader className="text-center pb-6">
         <CardTitle className="text-2xl font-bold text-travel-navy">
-          Plan Your Perfect Trip
+          {initialData ? "Review & Customize Your Trip" : "Plan Your Perfect Trip"}
         </CardTitle>
         <p className="text-muted-foreground mt-2">
-          Tell us your preferences and we'll create a personalized itinerary using Google's travel insights
+          {initialData 
+            ? "AI has filled the form based on your description. Review and modify as needed."
+            : "Tell us your preferences and we'll create a personalized itinerary using Google's travel insights"
+          }
         </p>
-        <div className="mt-4">
+        
+        {/* Quick Examples */}
+        <div className="mt-4 flex flex-wrap gap-2 justify-center">
           <Button 
             type="button"
             variant="outline" 
+            size="sm"
             onClick={fillParisExample}
-            className="flex items-center gap-2 mx-auto border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300"
+            className="flex items-center gap-1 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300"
           >
-            <Sparkles className="w-4 h-4" />
-            Try Example: 5-day Paris Trip
+            <Sparkles className="w-3 h-3" />
+            Paris Trip
           </Button>
+          <Button 
+            type="button"
+            variant="outline" 
+            size="sm"
+            onClick={fillManaliExample}
+            className="flex items-center gap-1 border-travel-green text-travel-green hover:bg-travel-green hover:text-white transition-all duration-300"
+          >
+            <Sparkles className="w-3 h-3" />
+            Manali Adventure
+          </Button>
+          <Button 
+            type="button"
+            variant="outline" 
+            size="sm"
+            onClick={fillGoaExample}
+            className="flex items-center gap-1 border-travel-orange text-travel-orange hover:bg-travel-orange hover:text-white transition-all duration-300"
+          >
+            <Sparkles className="w-3 h-3" />
+            Goa Beach
+          </Button>
+          {(initialData || Object.values(formData).some(v => v !== "")) && (
+            <Button 
+              type="button"
+              variant="outline" 
+              size="sm"
+              onClick={clearForm}
+              className="flex items-center gap-1 border-gray-400 text-gray-600 hover:bg-gray-400 hover:text-white transition-all duration-300"
+            >
+              <RefreshCw className="w-3 h-3" />
+              Clear All
+            </Button>
+          )}
         </div>
       </CardHeader>
       <CardContent>
@@ -95,7 +183,7 @@ export const TripPlannerForm = ({ onSubmit }: TripPlannerFormProps) => {
                 value={formData.startingPoint}
                 onChange={(e) => handleInputChange("startingPoint", e.target.value)}
                 required
-                className="border-2 focus:border-primary"
+                className={`border-2 focus:border-primary ${initialData ? 'bg-blue-50 border-blue-200' : ''}`}
               />
             </div>
 
@@ -111,7 +199,7 @@ export const TripPlannerForm = ({ onSubmit }: TripPlannerFormProps) => {
                 value={formData.destination}
                 onChange={(e) => handleInputChange("destination", e.target.value)}
                 required
-                className="border-2 focus:border-primary"
+                className={`border-2 focus:border-primary ${initialData ? 'bg-blue-50 border-blue-200' : ''}`}
               />
             </div>
 
@@ -122,7 +210,7 @@ export const TripPlannerForm = ({ onSubmit }: TripPlannerFormProps) => {
                 Number of Days
               </Label>
               <Select value={formData.days} onValueChange={(value) => handleInputChange("days", value)}>
-                <SelectTrigger className="border-2 focus:border-primary">
+                <SelectTrigger className={`border-2 focus:border-primary ${initialData ? 'bg-blue-50 border-blue-200' : ''}`}>
                   <SelectValue placeholder="Select duration" />
                 </SelectTrigger>
                 <SelectContent>
@@ -148,7 +236,7 @@ export const TripPlannerForm = ({ onSubmit }: TripPlannerFormProps) => {
                 value={formData.budget}
                 onChange={(e) => handleInputChange("budget", e.target.value)}
                 required
-                className="border-2 focus:border-primary"
+                className={`border-2 focus:border-primary ${initialData ? 'bg-blue-50 border-blue-200' : ''}`}
               />
             </div>
 
@@ -159,7 +247,7 @@ export const TripPlannerForm = ({ onSubmit }: TripPlannerFormProps) => {
                 Number of Travelers
               </Label>
               <Select value={formData.travelers} onValueChange={(value) => handleInputChange("travelers", value)}>
-                <SelectTrigger className="border-2 focus:border-primary">
+                <SelectTrigger className={`border-2 focus:border-primary ${initialData ? 'bg-blue-50 border-blue-200' : ''}`}>
                   <SelectValue placeholder="Select travelers" />
                 </SelectTrigger>
                 <SelectContent>
@@ -178,7 +266,7 @@ export const TripPlannerForm = ({ onSubmit }: TripPlannerFormProps) => {
                 Travel Mode
               </Label>
               <Select value={formData.travelMode} onValueChange={(value) => handleInputChange("travelMode", value)}>
-                <SelectTrigger className="border-2 focus:border-primary">
+                <SelectTrigger className={`border-2 focus:border-primary ${initialData ? 'bg-blue-50 border-blue-200' : ''}`}>
                   <SelectValue placeholder="Select travel mode" />
                 </SelectTrigger>
                 <SelectContent>
@@ -198,7 +286,7 @@ export const TripPlannerForm = ({ onSubmit }: TripPlannerFormProps) => {
                 Accommodation
               </Label>
               <Select value={formData.accommodation} onValueChange={(value) => handleInputChange("accommodation", value)}>
-                <SelectTrigger className="border-2 focus:border-primary">
+                <SelectTrigger className={`border-2 focus:border-primary ${initialData ? 'bg-blue-50 border-blue-200' : ''}`}>
                   <SelectValue placeholder="Select accommodation" />
                 </SelectTrigger>
                 <SelectContent>
@@ -216,7 +304,7 @@ export const TripPlannerForm = ({ onSubmit }: TripPlannerFormProps) => {
           <div className="space-y-2">
             <Label className="text-travel-navy font-medium">Trip Type</Label>
             <Select value={formData.tripType} onValueChange={(value) => handleInputChange("tripType", value)}>
-              <SelectTrigger className="border-2 focus:border-primary">
+              <SelectTrigger className={`border-2 focus:border-primary ${initialData ? 'bg-blue-50 border-blue-200' : ''}`}>
                 <SelectValue placeholder="What kind of trip are you planning?" />
               </SelectTrigger>
               <SelectContent>
@@ -236,16 +324,29 @@ export const TripPlannerForm = ({ onSubmit }: TripPlannerFormProps) => {
           {/* Additional Preferences */}
           <div className="space-y-2">
             <Label htmlFor="preferences" className="text-travel-navy font-medium">
-              Additional Preferences (Optional)
+              Additional Preferences 
+              {initialData && <span className="text-sm text-blue-600 font-normal">(Auto-filled from your description)</span>}
             </Label>
             <Textarea
               id="preferences"
               placeholder="Any specific requirements, activities you want to include/avoid, dietary restrictions, etc."
               value={formData.preferences}
               onChange={(e) => handleInputChange("preferences", e.target.value)}
-              className="border-2 focus:border-primary min-h-[100px]"
+              className={`border-2 focus:border-primary min-h-[100px] ${initialData ? 'bg-blue-50 border-blue-200' : ''}`}
             />
           </div>
+
+          {initialData && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <div className="flex items-center gap-2 text-green-700 mb-2">
+                <Sparkles className="w-4 h-4" />
+                <span className="font-medium">AI Analysis Complete!</span>
+              </div>
+              <p className="text-sm text-green-600">
+                We've automatically filled the form based on your description. Feel free to review and modify any details before generating your travel plan.
+              </p>
+            </div>
+          )}
 
           <Button 
             type="submit" 
