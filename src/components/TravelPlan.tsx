@@ -26,6 +26,7 @@ import {
   type PlaceDetails,
   type WeatherData
 } from "@/services/googleApi";
+import { getMockAttractions, getMockRestaurants } from "@/services/mockData";
 
 interface DayActivity {
   time: string;
@@ -70,21 +71,51 @@ export const TravelPlan = ({ startingPoint, destination, days, budget, travelers
     const fetchDestinationData = async () => {
       setIsLoading(true);
       try {
-        // Get destination coordinates
-        const coords = await geocodeDestination(destination);
-        if (coords) {
-          setCoordinates(coords);
+        // Try Google API first
+        try {
+          const coords = await geocodeDestination(destination);
+          if (coords) {
+            setCoordinates(coords);
+            
+            // Fetch data in parallel
+            const [attractionsData, restaurantsData, weatherData] = await Promise.all([
+              getNearbyAttractions(coords),
+              getNearbyRestaurants(coords),
+              getWeatherData(destination)
+            ]);
+            
+            setAttractions(attractionsData.slice(0, 6));
+            setRestaurants(restaurantsData.slice(0, 4));
+            setWeather(weatherData);
+          }
+        } catch (apiError: any) {
+          console.warn('Google API not available, using mock data for', destination);
           
-          // Fetch data in parallel
-          const [attractionsData, restaurantsData, weatherData] = await Promise.all([
-            getNearbyAttractions(coords),
-            getNearbyRestaurants(coords),
-            getWeatherData(destination)
-          ]);
+          // Use mock data specific to destination
+          const mockAttractions = getMockAttractions(destination);
+          const mockRestaurants = getMockRestaurants(destination);
           
-          setAttractions(attractionsData.slice(0, 6)); // Limit to 6 attractions
-          setRestaurants(restaurantsData.slice(0, 4)); // Limit to 4 restaurants
-          setWeather(weatherData);
+          setAttractions(mockAttractions);
+          setRestaurants(mockRestaurants);
+          setWeather({
+            temperature: Math.floor(Math.random() * 20) + 15,
+            description: 'Partly cloudy',
+            humidity: Math.floor(Math.random() * 40) + 40,
+            windSpeed: Math.floor(Math.random() * 10) + 5,
+            icon: '02d',
+          });
+          
+          // Set approximate coordinates for major cities
+          const cityCoords: Record<string, {lat: number, lng: number}> = {
+            'manali': { lat: 32.2396, lng: 77.1887 },
+            'goa': { lat: 15.2993, lng: 74.1240 },
+            'vijayawada': { lat: 16.5062, lng: 80.6480 },
+            'delhi': { lat: 28.7041, lng: 77.1025 },
+            'mumbai': { lat: 19.0760, lng: 72.8777 },
+            'bangalore': { lat: 12.9716, lng: 77.5946 }
+          };
+          
+          setCoordinates(cityCoords[destination.toLowerCase()] || { lat: 20, lng: 77 });
         }
       } catch (error) {
         console.error('Error fetching destination data:', error);

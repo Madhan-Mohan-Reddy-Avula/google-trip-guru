@@ -46,10 +46,16 @@ export const searchPlaces = async (query: string, location?: { lat: number; lng:
       `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query)}${locationParam}&key=${GOOGLE_API_KEY}`
     );
     const data = await response.json();
+    
+    if (data.status === 'REQUEST_DENIED') {
+      console.error('Google API Error:', data.error_message);
+      throw new Error('API_NOT_ENABLED');
+    }
+    
     return data.results || [];
   } catch (error) {
     console.error('Error searching places:', error);
-    return [];
+    throw error;
   }
 };
 
@@ -74,13 +80,19 @@ export const geocodeDestination = async (destination: string): Promise<{ lat: nu
       `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(destination)}&key=${GOOGLE_API_KEY}`
     );
     const data = await response.json();
+    
+    if (data.status === 'REQUEST_DENIED') {
+      console.error('Google API Error:', data.error_message);
+      throw new Error('API_NOT_ENABLED');
+    }
+    
     if (data.results && data.results.length > 0) {
       return data.results[0].geometry.location;
     }
     return null;
   } catch (error) {
     console.error('Error geocoding destination:', error);
-    return null;
+    throw error;
   }
 };
 
@@ -165,10 +177,16 @@ export const getNearbyAttractions = async (location: { lat: number; lng: number 
       `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location.lat},${location.lng}&radius=10000&type=${type}&key=${GOOGLE_API_KEY}`
     );
     const data = await response.json();
+    
+    if (data.status === 'REQUEST_DENIED') {
+      console.error('Google API Error:', data.error_message);
+      throw new Error('API_NOT_ENABLED');
+    }
+    
     return data.results || [];
   } catch (error) {
     console.error('Error getting nearby attractions:', error);
-    return [];
+    throw error;
   }
 };
 
